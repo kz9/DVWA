@@ -11,7 +11,13 @@ $page[ 'page_id' ] = 'setup';
 
 if( isset( $_POST[ 'create_db' ] ) ) {
 	// Anti-CSRF
-	checkToken( $_REQUEST[ 'user_token' ], $_SESSION[ 'session_token' ], 'setup.php' );
+	if (array_key_exists ("session_token", $_SESSION)) {
+		$session_token = $_SESSION[ 'session_token' ];
+	} else {
+		$session_token = "";
+	}
+
+	checkToken( $_REQUEST[ 'user_token' ], $session_token, 'setup.php' );
 
 	if( $DBMS == 'MySQL' ) {
 		include_once DVWA_WEB_PAGE_TO_ROOT . 'dvwa/includes/DBMS/MySQL.php';
@@ -69,7 +75,16 @@ $page[ 'body' ] .= "
 	{$DVWAUploadsWrite}<br />
 	{$DVWAPHPWrite}<br />
 	<br />
+	<br />
+	{$bakWritable}
+	<br />
 	<i><span class=\"failure\">Status in red</span>, indicate there will be an issue when trying to complete some modules.</i><br />
+	<br />
+	If you see disabled on either <i>allow_url_fopen</i> or <i>allow_url_include</i>, set the following in your php.ini file and restart Apache.<br />
+	<pre><code>allow_url_fopen = On
+allow_url_include = On</code></pre>
+	These are only required for the file inclusion labs so unless you want to play with those, you can ignore them.
+
 	<br /><br /><br />
 
 	<!-- Create db button -->
